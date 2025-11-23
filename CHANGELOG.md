@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.3.0](https://github.com/danielso2007/fc-clean-architecture/compare/v0.2.0...v0.3.0) (2025-11-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* Ajuste da url do git no package.json
+
+### Bug Fixes
+
+* correção da url do repository ([3f609b2](https://github.com/danielso2007/fc-clean-architecture/commit/3f609b29c1c677204485824fb9823cb74a2ef719))
+
 ## 0.2.0 (2025-11-23)
 
 
