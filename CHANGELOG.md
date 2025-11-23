@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.2](https://github.com/danielso2007/fc-clean-architecture/compare/v0.3.1...v0.3.2) (2025-11-23)
+
+
+### Features
+
+* usando madge para analise de dependências entre módulos ([d4b2dc1](https://github.com/danielso2007/fc-clean-architecture/commit/d4b2dc1935dc33d35d00ed2b319698ee102fe055))
+
 ### [0.3.1](https://github.com/danielso2007/fc-clean-architecture/compare/v0.3.0...v0.3.1) (2025-11-23)
 
 
