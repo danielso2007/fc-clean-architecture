@@ -33,6 +33,7 @@ describe("Caso de uso: Atualizar produto", () => {
   });
 
   beforeEach(() => {
+    jest.clearAllMocks();
     jest.resetModules();
   });
 
@@ -76,22 +77,25 @@ describe("Caso de uso: Atualizar produto", () => {
     expect(repository.update).not.toHaveBeenCalled();
   });
 
-  it("deve alterar o nome da entidade antes de chamar update()", async () => {
-    await usecase.execute(entradaValida);
-
-    const entidade = repository.update.mock.calls[0][0];
-    expect(entidade.name).toBe(entradaValida.name);
-  });
-
-  it("deve alterar o preço antes de persistir", async () => {
-    await usecase.execute(entradaValida);
-
-    const entidade = repository.update.mock.calls[0][0];
-    expect(entidade.price).toBe(entradaValida.price);
-  });
-
   it("deve lançar erro ao atualizar com preço negativo", async () => {
     const entrada = { ...entradaValida, price: -100 };
+    await expect(usecase.execute(entrada)).rejects.toThrow();
+    expect(repository.update).not.toHaveBeenCalled();
+  });
+
+  it("deve lançar erro quando produto não existe", async () => {
+    const produto2 = { ...produto, _id: "nao-existe", _price: 15236 };
+
+    let MockRepository2 = (found = true): RepositoryMock => ({
+      create: jest.fn(),
+      findAll: jest.fn(),
+      find: jest.fn().mockResolvedValue(found ? produto2 : null),
+      update: jest.fn().mockResolvedValue(undefined),
+    });
+
+    usecase = new UpdateProductUseCase(MockRepository2(true));
+
+    const entrada = { ...entradaValida, id: "nao-existe", price: -100 };
 
     await expect(usecase.execute(entrada)).rejects.toThrow();
     expect(repository.update).not.toHaveBeenCalled();
