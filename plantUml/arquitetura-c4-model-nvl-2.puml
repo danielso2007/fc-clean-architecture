@@ -1,0 +1,41 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Person_Ext(consumer, "Cliente / Consumidor", "Frontend ou serviço que consome a API (checkout, gestão de clientes).")
+
+System_Boundary(sys, "fc-clean-architecture (src/)") {
+  Container(webapp, "API HTTP (Express)", "Node.js + Express", "Entradas HTTP - rotas e presenters.\nArquivos: src/infrastructure/api/server.ts, express.ts, routes/*.route.ts, presenters/*.ts")
+  Container(app, "Application / Use Cases", "TypeScript", "Casos de uso / application services.\nArquivos: src/usecase/* (create/find/list/update customer)")
+  Container(domain, "Domain", "TypeScript", "Entidades, serviços, factories, validators e eventos de domínio.\nArquivos: src/domain/* (checkout, customer, product, @shared)")
+  Container(repos, "Repository Implementations (Sequelize)", "TypeScript + Sequelize", "Implementações concretas dos repositories e modelos Sequelize.\nArquivos: src/infrastructure/*/repository/sequelize/*.ts (customer.model.ts, order.model.ts, product.model.ts, repositories...)")
+  Container(eventSystem, "Event Dispatcher / Handlers", "TypeScript", "Dispatcher e handlers de eventos de domínio.\nArquivos: src/domain/@shared/event/*, src/domain/product/event/handler/*")
+}
+
+System_Ext(db, "Banco de Dados Relacional", "RDBMS (acessado via Sequelize models)\nModelos: src/infrastructure/*/repository/sequelize/*.model.ts")
+System_Ext(mail, "Serviço de E-mail / Notificação", "Serviço externo usado pelo handler:\nsrc/domain/product/event/handler/send-email-when-product-is-created.handler.ts")
+
+' --- Relacionamentos (estritamente inferidos dos arquivos fornecidos) ---
+Rel(consumer, webapp, "HTTP - solicita operações de checkout / customer (rotas)")
+
+Rel(webapp, app, "Chama casos de uso / application services\n(controllers/routes delegam para usecases)\nReferências: src/infrastructure/api/routes/*.route.ts -> src/usecase/*")
+Rel(app, domain, "Invoca regras de negócio, entidades e serviços de domínio\n(arquivos em src/usecase/ -> src/domain/)")
+Rel(app, repos, "Depende de interfaces de repositório; usa implementações concretas em infrastructure\n(interfaces: src/domain/*/repository/*.interface.ts; impl: src/infrastructure/*/repository/sequelize/*.ts)")
+
+Rel(repos, db, "Leitura/Gravação (Sequelize models)\nModel files: src/infrastructure/*/repository/sequelize/*.model.ts")
+Rel(domain, eventSystem, "Dispara eventos de domínio (ex.: product.created)\nArquivos: src/domain/@shared/event/* e product/event/*.ts")
+Rel(eventSystem, mail, "Handler envia e-mail/notification (send-email-when-product-is-created.handler.ts)")
+
+' Nota técnica curta e mapeamento de arquivos (sem suposições)
+note right
+  Mapeamento direto para src/ (fornecido):
+  - API HTTP (Express): src/infrastructure/api/
+  - Use Cases / Application: src/usecase/
+  - Domain (entities/services/factories/validators/events): src/domain/
+  - Repository implementations (Sequelize): src/infrastructure/*/repository/sequelize/
+  - Event dispatcher & handlers: src/domain/@shared/event/ and src/domain/product/event/handler/
+  Não foram adicionados elementos que não apareçam na árvore src/ fornecida.
+end note
+
+@enduml

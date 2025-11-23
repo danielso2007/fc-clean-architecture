@@ -1,0 +1,101 @@
+@startuml
+' C4 Level 4 (Code) - fc-clean-architecture (baseado na árvore src/)
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+' Actor / External Systems (existentes no código)
+Person_Ext(consumer, "Cliente / Consumidor", "Front-end ou serviço que consome a API")
+System_Ext(db, "Banco de Dados Relacional", "Persistência (acessada pelos modelos Sequelize)")
+System_Ext(mail, "Serviço de E-mail / Notificação", "Invocado pelo handler product-created")
+
+' System boundary
+System_Boundary(sys, "fc-clean-architecture (src/)") {
+
+  ' Container: Web/API
+  Container_Boundary(webapp, "API HTTP (Express) - src/infrastructure/api") {
+    Component(web_server, "server.ts / express.ts", "Express server", "Inicia servidor, middlewares")
+    Component(routes_customer, "customer.route.ts", "Express routes", "Endpoints HTTP para Customer")
+    Component(customer_presenter, "customer.presenter.ts", "Presenter", "Formata resposta DTOs")
+  }
+
+  ' Container: Application / Use Cases
+  Container_Boundary(app, "Application / Use Cases - src/usecase") {
+    Component(cc_uc, "create.customer.usecase.ts", "UseCase", "CreateCustomerUseCase (create.customer.dto.ts)")
+    Component(find_uc, "find.customer.usecase.ts", "UseCase", "FindCustomerUseCase (find.customer.dto.ts)")
+    Component(list_uc, "list.customer.usecase.ts", "UseCase", "ListCustomerUseCase (list.customer.dto.ts)")
+    Component(update_uc, "update.customer.usecase.ts", "UseCase", "UpdateCustomerUseCase (update.customer.dto.ts)")
+  }
+
+  ' Container: Domain (entities, services, factories, events)
+  Container_Boundary(domain, "Domain - src/domain") {
+    Component(customer_entity, "customer.ts", "Entity", "Customer entity (src/domain/customer/entity/customer.ts)")
+    Component(product_entity, "product.ts", "Entity", "Product entity (src/domain/product/entity/product.ts)")
+    Component(order_entity, "order.ts", "Entity", "Order entity (src/domain/checkout/entity/order.ts)")
+    Component(product_service, "product.service.ts", "Domain service", "Product service logic")
+    Component(order_service, "order.service.ts", "Domain service", "Order service logic")
+    Component(event_dispatcher, "event-dispatcher.ts", "Event Dispatcher", "Dispatch/handle domain events (src/domain/@shared/event/)")
+    Component(product_created_handler, "send-email-when-product-is-created.handler.ts", "Event Handler", "Handle product.created -> send email")
+    Component(factories_validators, "factories & validators", "Factories/Validators", "src/domain/*/factory/* and validators")
+  }
+
+  ' Container: Repositories / Infra (Sequelize implementations)
+  Container_Boundary(repos, "Repository Impl (Sequelize) - src/infrastructure/*/repository/sequelize") {
+    Component(customer_repo_impl, "customer.repository.ts", "Repository impl", "CustomerRepository (Sequelize)")
+    Component(order_repo_impl, "order.repository.ts", "Repository impl", "OrderRepository (Sequelize)")
+    Component(product_repo_impl, "product.repository.ts", "Repository impl", "ProductRepository (Sequelize)")
+    Component(sequelize_models, "Sequelize models", "ORM models", "customer.model.ts, order.model.ts, order-item.model.ts, product.model.ts")
+  }
+
+  ' Container: Checkout domain (components used by order/checkout)
+  Container_Boundary(checkout, "Checkout Domain - src/domain/checkout") {
+    Component(order_item_entity, "order_item.ts", "Value/Entity", "OrderItem entity")
+    Component(order_factory, "order.factory.ts", "Factory", "Order factory")
+  }
+}
+
+' --- Code-level relationships (somente o que é inferível dos paths/files) ---
+Rel(consumer, routes_customer, "HTTP → customer endpoints")
+Rel(routes_customer, cc_uc, "invoca")
+Rel(routes_customer, find_uc, "invoca")
+Rel(routes_customer, list_uc, "invoca")
+Rel(routes_customer, update_uc, "invoca")
+Rel(routes_customer, customer_presenter, "usa para formatar resposta")
+
+Rel(cc_uc, customer_entity, "cria/valida →")
+Rel(find_uc, customer_entity, "consulta →")
+Rel(list_uc, customer_entity, "lista →")
+Rel(update_uc, customer_entity, "atualiza →")
+
+Rel(cc_uc, customer_repo_impl, "persiste / consulta (usa interface definida em domain/customer/repository)")
+Rel(find_uc, customer_repo_impl, "consulta")
+Rel(list_uc, customer_repo_impl, "consulta")
+Rel(update_uc, customer_repo_impl, "persiste / consulta")
+
+Rel(customer_repo_impl, sequelize_models, "usa →")
+Rel(order_repo_impl, sequelize_models, "usa →")
+Rel(product_repo_impl, sequelize_models, "usa →")
+Rel(sequelize_models, db, "persistência →")
+
+Rel(cc_uc, event_dispatcher, "pode dispatchar eventos")
+Rel(product_entity, event_dispatcher, "dispara product.created")
+Rel(event_dispatcher, product_created_handler, "dispatch -> handler")
+Rel(product_created_handler, mail, "envia e-mail ->")
+
+Rel(order_service, order_repo_impl, "usa para persistir orders")
+Rel(order_service, order_entity, "cria/manipula order")
+Rel(product_service, product_repo_impl, "usa/consulta products")
+Rel(factories_validators, customer_entity, "cria/valida entidades")
+
+' --- Small note with file mapping (strict, no inventions) ---
+note right
+  Mapeamento direto (baseado na árvore src/ informada):
+  - API / routes / presenters: src/infrastructure/api/
+  - UseCases (application): src/usecase/customer/
+  - Domain: src/domain/
+  - Repo impl (Sequelize): src/infrastructure/*/repository/sequelize/
+  - Event handler: src/domain/product/event/handler/send-email-when-product-is-created.handler.ts
+  Este diagrama é estrito ao que os paths/filenames permitem inferir.
+end note
+
+@enduml

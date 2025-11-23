@@ -1,0 +1,19 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Person_Ext(consumer, "Cliente / Consumidor", "Frontend ou serviço que consome a API ou os módulos exportados (checkout, gestão de clientes).")
+
+System_Boundary(sys, "fc-clean-architecture (src/)") {
+  System(system_app, "fc-clean-architecture", "Sistema de venda / checkout em TypeScript.\nLocalizações relevantes: src/infrastructure/api, src/usecase, src/domain, src/infrastructure/*/repository/sequelize")
+}
+
+System_Ext(db, "Banco de Dados Relacional (Sequelize models)", "Persistência (models em src/infrastructure/*/repository/sequelize/*.model.ts)")
+System_Ext(mail, "Serviço de E-mail / Notificação", "Utilizado pelo handler: src/domain/product/event/handler/send-email-when-product-is-created.handler.ts")
+
+Rel(consumer, system_app, "Consume API HTTP ou módulos exportados (checkout, customer usecases)")
+Rel(system_app, db, "Persistência: leitura/gravação via repositories (Sequelize implementations)")
+Rel(system_app, mail, "Envio de e-mail/notification via handler de evento (product.created)")
+
+@enduml

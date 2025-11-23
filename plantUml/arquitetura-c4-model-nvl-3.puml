@@ -1,0 +1,81 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Person_Ext(consumer, "Cliente / Consumidor", "Frontend ou serviço que consome a API (checkout, gestão de clientes).")
+
+System_Boundary(sys, "fc-clean-architecture (src/)") {
+
+  Container_Boundary(webapp, "API HTTP (Express)\n[src/infrastructure/api]") {
+    Component(server, "Express Server", "Node.js + Express", "server.ts, express.ts")
+    Component(routes_customer, "Customer Routes", "Express routes", "src/infrastructure/api/routes/customer.route.ts")
+    Component(customer_presenter, "Customer Presenter", "Presenter", "src/infrastructure/api/presenters/customer.presenter.ts")
+  }
+
+  Container_Boundary(app, "Application / Use Cases\n[src/usecase]") {
+    Component(uc_create_customer, "CreateCustomerUseCase", "Use case", "src/usecase/customer/create/create.customer.usecase.ts")
+    Component(uc_find_customer, "FindCustomerUseCase", "Use case", "src/usecase/customer/find/find.customer.usecase.ts")
+    Component(uc_list_customer, "ListCustomerUseCase", "Use case", "src/usecase/customer/list/list.customer.usecase.ts")
+    Component(uc_update_customer, "UpdateCustomerUseCase", "Use case", "src/usecase/customer/update/update.customer.usecase.ts")
+  }
+
+  Container_Boundary(domain, "Domain\n[src/domain]") {
+    Component(customer_entity, "Customer Entity", "Entity", "src/domain/customer/entity/customer.ts")
+    Component(customer_factory, "Customer Factory / Validator", "Factory / Validator", "src/domain/customer/factory/*, src/domain/customer/validator/*")
+    Component(product_entity, "Product Entity", "Entity", "src/domain/product/entity/product.ts / product-b.ts / product.interface.ts")
+    Component(product_service, "Product Service", "Domain service", "src/domain/product/service/product.service.ts")
+    Component(product_event, "Product Created Event", "Domain event", "src/domain/product/event/product-created.event.ts")
+    Component(product_event_handler, "SendEmailWhenProductIsCreated Handler", "Event handler", "src/domain/product/event/handler/send-email-when-product-is-created.handler.ts")
+    Component(order_entity, "Order Entity\n(order & order_item)", "Entity", "src/domain/checkout/entity/order.ts, order_item.ts")
+    Component(order_factory, "Order Factory", "Factory", "src/domain/checkout/factory/order.factory.ts")
+    Component(order_service, "Order Service", "Domain service", "src/domain/checkout/service/order.service.ts")
+    Component(shared_event_dispatcher, "Event Dispatcher", "Dispatcher", "src/domain/@shared/event/event-dispatcher.ts")
+  }
+
+  Container_Boundary(repos, "Repository Implementations (Sequelize)\n[src/infrastructure/*/repository/sequelize]") {
+    Component(customer_repo_impl, "CustomerRepository (Sequelize)", "Repository impl", "src/infrastructure/customer/repository/sequelize/customer.repository.ts")
+    Component(order_repo_impl, "OrderRepository (Sequelize)", "Repository impl", "src/infrastructure/order/repository/sequilize/order.repository.ts")
+    Component(product_repo_impl, "ProductRepository (Sequelize)", "Repository impl", "src/infrastructure/product/repository/sequelize/product.repository.ts")
+    Component(sequelize_models, "Sequelize Models", "Models", "customer.model.ts, order.model.ts, order-item.model.ts, product.model.ts")
+  }
+}
+
+System_Ext(db, "Banco de Dados Relacional", "Persistência (Sequelize models)")
+System_Ext(mail, "Serviço de E-mail / Notificação", "Invocado por handler: src/domain/product/event/handler/send-email-when-product-is-created.handler.ts")
+
+' --- Relações (apenas o que é inferível dos paths/nomes de arquivos) ---
+Rel(consumer, routes_customer, "HTTP → endpoints (customer)")
+Rel(routes_customer, uc_create_customer, "invoca")
+Rel(routes_customer, uc_find_customer, "invoca")
+Rel(routes_customer, uc_list_customer, "invoca")
+Rel(routes_customer, uc_update_customer, "invoca")
+Rel(routes_customer, customer_presenter, "usa para formatar resposta")
+
+Rel(uc_create_customer, customer_factory, "usa para criar/validar")
+Rel(uc_create_customer, customer_entity, "cria/manipula")
+Rel(uc_find_customer, customer_entity, "consulta")
+Rel(uc_list_customer, customer_entity, "lista")
+Rel(uc_update_customer, customer_entity, "atualiza")
+
+Rel(uc_create_customer, customer_repo_impl, "persiste / consulta (via repository interface)")
+Rel(uc_find_customer, customer_repo_impl, "consulta")
+Rel(uc_list_customer, customer_repo_impl, "consulta")
+Rel(uc_update_customer, customer_repo_impl, "persiste / consulta")
+
+Rel(customer_repo_impl, sequelize_models, "usa")
+Rel(order_repo_impl, sequelize_models, "usa")
+Rel(product_repo_impl, sequelize_models, "usa")
+Rel(sequelize_models, db, "persistência")
+
+Rel(uc_create_customer, shared_event_dispatcher, "pode disparar eventos de domínio")
+Rel(product_entity, shared_event_dispatcher, "pode disparar product.created")
+Rel(shared_event_dispatcher, product_event_handler, "dispara -> handler")
+Rel(product_event_handler, mail, "envia e-mail/notification")
+
+Rel(order_service, order_repo_impl, "usa para persistir orders")
+Rel(order_service, order_entity, "manipula / cria orders")
+Rel(product_service, product_repo_impl, "usa para persistir/consultar products")
+Rel(customer_factory, customer_entity, "instancia / valida")
+
+@enduml
