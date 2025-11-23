@@ -36,7 +36,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/danielso2007/fc-ddd-patterns.git"
+    "url": "git+https://github.com/danielso2007/fc-clean-architecture.git"
   },
   "keywords": [
     "ddd",
