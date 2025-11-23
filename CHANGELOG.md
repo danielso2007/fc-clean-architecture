@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.1](https://github.com/danielso2007/fc-clean-architecture/compare/v0.3.0...v0.3.1) (2025-11-23)
+
+
+### Bug Fixes
+
+* correção da configuração do husky ([db0165d](https://github.com/danielso2007/fc-clean-architecture/commit/db0165df8e456bc6c87a0ac230037c3cda580b81))
+
 ## [0.3.0](https://github.com/danielso2007/fc-clean-architecture/compare/v0.2.0...v0.3.0) (2025-11-23)
 
 
