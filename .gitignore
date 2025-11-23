@@ -5,3 +5,6 @@ dist
 out
 tsconfig.tsbuildinfo
 package-lock.json
+graph.svg
+graph.dot
+madge-audit-output
