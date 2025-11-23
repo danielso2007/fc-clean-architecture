@@ -27,7 +27,7 @@ customerRoute.post("/", async (req: Request, res: Response) => {
 
 customerRoute.get("/", async (req: Request, res: Response) => {
   const usecase = new ListCustomerUseCase(new CustomerRepository());
-  const output = await usecase.execute({});
+  const output = await usecase.execute();
 
   res.format({
     json: async () => res.send(output),
