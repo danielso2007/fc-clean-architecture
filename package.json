@@ -8,6 +8,11 @@
   "engines": {
     "node": ">=18"
   },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
   "scripts": {
     "clean": "rimraf dist",
     "build": "tsc -p tsconfig.json",
@@ -19,6 +24,10 @@
     "test": "npm run tsc -- --noEmit && jest",
     "tsc": "tsc",
     "release": "standard-version",
+    "changelog": "standard-version --dry-run",
+    "prepare": "husky",
+    "commit": "npx git-cz",
+    "lint:commit": "commitlint --from=HEAD~1",
     "lint": "eslint 'src/**/*.ts' --ext .ts --no-ignore",
     "lint:fix": "eslint 'src/**/*.ts' --ext .ts --no-ignore --fix"
   },
@@ -37,6 +46,8 @@
   "author": "Daniel Oliveira",
   "license": "MIT",
   "devDependencies": {
+    "@commitlint/cli": "^20.1.0",
+    "@commitlint/config-conventional": "^20.0.0",
     "@eslint/js": "^9.38.0",
     "@swc/core": "^1.15.3",
     "@swc/jest": "^0.2.39",
@@ -47,11 +58,15 @@
     "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^8.46.1",
     "@typescript-eslint/parser": "^8.46.1",
+    "commitizen": "^4.3.1",
+    "commitlint": "^20.1.0",
+    "cz-conventional-changelog": "^3.3.0",
     "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import": "^2.32.0",
     "globals": "^16.4.0",
+    "husky": "^9.1.7",
     "jest": "^30.2.0",
     "prettier": "^3.6.2",
     "rimraf": "^5.0.0",
