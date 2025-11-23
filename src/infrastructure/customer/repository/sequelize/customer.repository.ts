@@ -45,7 +45,7 @@ export default class CustomerRepository implements CustomerRepositoryInterface {
         },
         rejectOnEmpty: true,
       });
-    } catch (error) {
+    } catch {
       throw new Error("Customer not found");
     }
 

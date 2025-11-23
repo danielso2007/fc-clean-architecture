@@ -1,10 +1,18 @@
 import CustomerFactory from "../../../domain/customer/factory/customer.factory";
 import Address from "../../../domain/customer/value-object/address";
 import UpdateCustomerUseCase from "./update.customer.usecase";
+
 const customer = CustomerFactory.createWithAddress(
   "John",
   new Address("Street", 123, "Zip", "City")
 );
+
+type RepositoryMock = {
+  create: jest.Mock;
+  findAll: jest.Mock;
+  find: jest.Mock;
+  update: jest.Mock;
+};
 
 const input = {
   id: customer.id,
@@ -17,7 +25,7 @@ const input = {
   },
 };
 
-const MockRepository = () => {
+const MockRepository = (): RepositoryMock => {
   return {
     create: jest.fn(),
     findAll: jest.fn(),

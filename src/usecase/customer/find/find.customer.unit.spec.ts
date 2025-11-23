@@ -1,15 +1,19 @@
-import { Sequelize } from "sequelize-typescript";
 import Customer from "../../../domain/customer/entity/customer";
 import Address from "../../../domain/customer/value-object/address";
-import CustomerModel from "../../../infrastructure/customer/repository/sequelize/customer.model";
-import CustomerRepository from "../../../infrastructure/customer/repository/sequelize/customer.repository";
 import FindCustomerUseCase from "./find.customer.usecase";
+
+type RepositoryMock = {
+  create: jest.Mock;
+  findAll: jest.Mock;
+  find: jest.Mock;
+  update: jest.Mock;
+};
 
 const customer = new Customer("123", "John");
 const address = new Address("Street", 123, "Zip", "City");
 customer.changeAddress(address);
 
-const MockRepository = () => {
+const MockRepository = (): RepositoryMock => {
   return {
     find: jest.fn().mockReturnValue(Promise.resolve(customer)),
     findAll: jest.fn(),

@@ -5,6 +5,7 @@ export default class SendEmailWhenProductIsCreatedHandler
   implements EventHandlerInterface<ProductCreatedEvent>
 {
   handle(event: ProductCreatedEvent): void {
-    console.log(`Sending email to .....`); 
+    // eslint-disable-next-line no-console
+    console.log(`Sending email to ..... ${event}`); 
   }
 }

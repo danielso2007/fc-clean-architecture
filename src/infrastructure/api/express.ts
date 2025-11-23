@@ -9,7 +9,7 @@ app.use("/customer", customerRoute);
 
 export let sequelize: Sequelize;
 
-async function setupDb() {
+async function setupDb(): Promise<void> {
   sequelize = new Sequelize({
     dialect: "sqlite",
     storage: ":memory:",

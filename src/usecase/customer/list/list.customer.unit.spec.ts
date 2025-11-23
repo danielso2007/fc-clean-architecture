@@ -1,6 +1,14 @@
 import CustomerFactory from "../../../domain/customer/factory/customer.factory";
 import Address from "../../../domain/customer/value-object/address";
 import ListCustomerUseCase from "./list.customer.usecase";
+
+type RepositoryMock = {
+  create: jest.Mock;
+  findAll: jest.Mock;
+  find: jest.Mock;
+  update: jest.Mock;
+};
+
 const customer1 = CustomerFactory.createWithAddress(
   "John Doe",
   new Address("Street 1", 1, "12345", "City")
@@ -11,7 +19,7 @@ const customer2 = CustomerFactory.createWithAddress(
   new Address("Street 2", 2, "123456", "City 2")
 );
 
-const MockRepository = () => {
+const MockRepository = (): RepositoryMock => {
   return {
     create: jest.fn(),
     find: jest.fn(),
@@ -25,7 +33,7 @@ describe("Unit test for listing customer use case", () => {
     const repository = MockRepository();
     const useCase = new ListCustomerUseCase(repository);
 
-    const output = await useCase.execute({});
+    const output = await useCase.execute();
 
     expect(output.customers.length).toBe(2);
     expect(output.customers[0].id).toBe(customer1.id);

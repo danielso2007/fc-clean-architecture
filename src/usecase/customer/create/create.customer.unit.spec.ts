@@ -1,4 +1,12 @@
 import CreateCustomerUseCase from "./create.customer.usecase";
+
+type RepositoryMock = {
+  create: jest.Mock;
+  findAll: jest.Mock;
+  find: jest.Mock;
+  update: jest.Mock;
+};
+
 const input = {
   name: "John",
   address: {
@@ -9,7 +17,7 @@ const input = {
   },
 };
 
-const MockRepository = () => {
+const MockRepository = (): RepositoryMock => {
   return {
     find: jest.fn(),
     findAll: jest.fn(),
