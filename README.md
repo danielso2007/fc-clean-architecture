@@ -10,6 +10,53 @@
 
 Para estudo.
 
+# Madge
+
+O Madge é uma ferramenta CLI/Node.js usada para analisar dependências entre módulos (JavaScript/TypeScript) e detectar problemas estruturais, especialmente úteis em arquiteturas como Clean Architecture, Hexagonal e DDD, onde o fluxo de dependências é crítico.
+
+`npm install -g madge`
+
+### Gera o grafo de dependências
+
+Ele varre arquivos JS/TS e identifica todos os imports/exports, construindo um grafo dirigido entre módulos.
+
+Útil para:
+
+- Visualizar camadas (domínio → aplicação → infra).
+- Provar se a Dependency Rule está sendo respeitada.
+- Mapear acoplamento acidental.
+
+```shell
+madge src --image graph.svg
+```
+
+### Detecta ciclos de dependência
+
+Ciclos são inimigos de manutenibilidade e quebra de isolamento de camadas.
+
+Exemplo:
+```shell
+madge src --circular
+```
+
+Retorno esperado:
+```shell
+No circular dependencies found!
+```
+
+### Detecta módulos órfãos
+
+Módulos que ninguém importa. Podem ser:
+
+- Código morto
+- Implementação esquecida
+- Violação de interface (ports não usados)
+
+Comando:
+```
+madge src --orphans
+```
+
 # Estrutura do projeto
 
 Obs.: Para gerar essa saída, foi usado o comando: `tree -I "node_modules|dist|.git"`.
