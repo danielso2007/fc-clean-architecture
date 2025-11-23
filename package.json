@@ -1,34 +1,78 @@
 {
-  "devDependencies": {
-    "@swc/cli": "^0.1.55",
-    "@swc/core": "^1.2.148",
-    "@swc/jest": "^0.2.20",
-    "@types/jest": "^27.4.1",
-    "@types/jstoxml": "^2.0.2",
-    "@types/supertest": "^2.0.12",
-    "jest": "^27.5.1",
-    "supertest": "^6.2.2",
-    "ts-node": "^10.6.0",
-    "tslint": "^6.1.3",
-    "typescript": "^4.5.5"
+  "name": "fc-ddd-patterns",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Projeto de estudo Clean Architecture",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "engines": {
+    "node": ">=18"
   },
   "scripts": {
+    "clean": "rimraf dist",
+    "build": "tsc -p tsconfig.json",
+    "build:watch": "tsc -w -p tsconfig.json",
+    "start": "node dist/index.js",
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "format": "prettier --write \"src/**/*.{ts,tsx,js,json,md}\"",
+    "test:watch": "jest --watch",
     "test": "npm run tsc -- --noEmit && jest",
     "tsc": "tsc",
-    "dev": "nodemon src/infrastructure/api/server.ts"
+    "release": "standard-version",
+    "lint": "eslint 'src/**/*.ts' --ext .ts --no-ignore",
+    "lint:fix": "eslint 'src/**/*.ts' --ext .ts --no-ignore --fix"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danielso2007/fc-ddd-patterns.git"
+  },
+  "keywords": [
+    "ddd",
+    "architecture",
+    "typescript"
+  ],
+  "author": "Daniel Oliveira",
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "^9.38.0",
+    "@swc/core": "^1.15.3",
+    "@swc/jest": "^0.2.39",
+    "@types/jest": "^29.5.14",
+    "@types/jstoxml": "^5.0.0",
+    "@types/node": "^24.7.2",
+    "@types/supertest": "^6.0.3",
+    "@types/uuid": "^8.3.4",
+    "@typescript-eslint/eslint-plugin": "^8.46.1",
+    "@typescript-eslint/parser": "^8.46.1",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import": "^2.32.0",
+    "globals": "^16.4.0",
+    "jest": "^30.2.0",
+    "prettier": "^3.6.2",
+    "rimraf": "^5.0.0",
+    "standard-version": "^9.5.0",
+    "supertest": "^7.1.4",
+    "ts-jest": "^29.4.5",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@types/express": "^4.17.13",
-    "@types/uuid": "^8.3.4",
-    "dotenv": "^16.0.0",
-    "express": "^4.17.3",
-    "jstoxml": "^3.2.3",
-    "nodemon": "^2.0.15",
-    "reflect-metadata": "^0.1.13",
-    "sequelize": "^6.17.0",
-    "sequelize-typescript": "^2.1.3",
-    "sqlite3": "^5.0.2",
-    "uuid": "^8.3.2",
-    "yup": "^0.32.11"
+    "@types/express": "^5.0.3",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "jstoxml": "3.2.3",
+    "nodemon": "^3.1.10",
+    "reflect-metadata": "^0.2.2",
+    "sequelize": "^6.37.7",
+    "sequelize-typescript": "^2.1.6",
+    "sqlite3": "^5.1.7",
+    "uuid": "8.3.2",
+    "yup": "^1.7.1"
   }
 }
