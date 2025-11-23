@@ -12,6 +12,9 @@
     "strict": true,
     "strictNullChecks": false,
     "skipLibCheck": true,
+    "sourceMap": true,
+    "inlineSources": true,
+    "inlineSourceMap": false,
     "baseUrl": "src"
   },
   "include": ["src/**/*.ts"],
